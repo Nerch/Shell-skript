@@ -1,7 +1,7 @@
 #!/bin/bash
 
 show_menu() {
-    echo "WLAN auswählen"
+    echo "Menü"
     echo "Enter 1 Installation "update & upgrade""
     echo "Enter 2 Installation "Net-Tools""
     echo "Enter 3 Installation "SSH""
