@@ -1,0 +1,340 @@
+#!/bin/bash
+
+show_menu() {
+    echo "Menü"
+    echo "Enter 1 Installation "update und upgrade""
+    echo "Enter 2 Installation "Net-Tools""
+    echo "Enter 3 Installation "SSH""
+    echo "Enter 4 Installation "Apache2""
+    echo "Enter 5 Installation "PHP-Module""
+    echo "Enter 6 Installation "MariaDB""
+    echo "Enter 7 Installation "PHPMyAdmin""
+    echo "Enter 8 Installation "Composer""
+    echo "Enter 9 Installation "Gastzugang""
+    echo "Enter q to quit"
+    }
+
+
+main()      {
+    while true; do
+        show_menu
+        read -p "Bitte wähle eine Option: " choice
+        case $choice in
+            1) option1 ;;
+            2) option2 ;;
+            3) option3 ;;
+            4) option4 ;;
+            5) option5 ;;
+            6) option6 ;;
+            7) option7 ;;
+            8) option8 ;;
+            9) option9 ;;
+            q) echo "Auf Wiedersehen!"; exit ;;
+            *) echo "Ungültige Option. Bitte wähle erneut." ;;
+        esac
+        read -n 1 -s -r -p "Drücke eine beliebige Taste, um fortzufahren..."
+    done
+    }
+
+option1()   {
+    echo "APK update & upgrade "
+    apt install update&upgrade
+    
+    clear
+    return
+    }
+
+option2()   {
+    echo "Net-Tools installieren"
+    sudo net-tools
+    clear
+    return
+    }
+
+option3()   {
+    while true; do
+        echo "Untermenü"
+        echo "Enter a ändert UseDNS no"
+        echo "Enter b PermitRootLogin yes"
+        echo "Enter c SSHD_OPTS="u0""
+        echo "Enter q um zurück zu gehen"
+        read -p "Please choose an option: " sub_choice
+        case $sub_choice in
+            a) sub3_option1 ;;
+            b) sub3_option2 ;;
+            c) sub3_option3 ;;
+            q) return ;;
+            *) echo "Invalid option. Please choose again." ;;
+        esac
+        read -n 1 -s -r -p "Press any key to continue..."
+    done
+    }
+
+    sub3_option1() {
+        echo "Doing something in the sub menu..."
+        sed -i 's/#UseDNS yes/UseDNS no/' /etc/ssh/sshd_config
+        sleep 2
+        sudo systemctl restart sshd
+                    return
+    }
+
+    sub3_option2() {
+        echo "Setzt Root login in der /etc/ssh/sshd_config auf yes"
+        sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+        sleep 2
+        sudo systemctl restart sshd
+                    return
+    }
+
+    sub3_option3() {
+        echo "Setzt SSHD_OPTS auf u0 in der /etc/ssh/sshd_config"
+        sed -i 's/SSHD_OPTS="u0"/SSHD_OPTS="u0"/' /etc/ssh/sshd_config
+        sleep 2
+        sudo systemctl restart sshd
+                    return
+
+    }
+
+
+option4()   {
+    while true; do
+        echo "Untermenü"
+        echo "Enter a phpinfo() -> var/www/html/phpinfo.php"
+        echo "Enter b virtualhost -> /etc/apache2/sites-available/example.conf"
+        echo "Enter q um zurück zu gehen"
+        read -p "Please choose an option: " sub_choice
+        case $sub_choice in
+            a) sub4_option1 ;;
+            b) sub4_option2 ;;
+            q)  
+            return ;;
+            *) echo "Invalid option. Please choose again." ;;
+        esac
+        read -n 1 -s -r -p "Press any key to continue..."
+    done
+    }
+    sub4_option1() {
+        echo "phpinfo() -> var/www/html/phpinfo.php"
+        echo "<?php phpinfo(); ?>" > /var/www/html/phpinfo.php
+        sleep 2
+        sudo systemctl restart apache2
+                    return
+    }
+    sub4_option2() {
+        # This line of code prints the path of the virtual host configuration file.
+        echo "virtualhost -> /etc/apache2/sites-available/example.conf"
+
+        # Überprüfen, ob die Datei existiert
+        if [ -f /etc/apache2/sites-available/example.conf ]; then
+            # Wenn die Datei existiert, leeren Sie sie
+            > /etc/apache2/sites-available/example.conf
+        else
+            # Wenn die Datei nicht existiert, erstellen Sie sie
+            touch /etc/apache2/sites-available/example.conf
+        fi
+
+        # Fügen Sie den neuen Inhalt zur Datei hinzu
+        echo '        <VirtualHost *:80>
+                    Servername servername
+                    ServerAlias *.servername
+                    DocumentRoot "/vargrant/puplic"
+                    ServerAdmin admin@servername    
+                    DirectoryIndex index.php index.html index.htm
+                    <Directory "/vargrant/puplic">
+                        options +Indexes +FollowSymLinks +multiViews
+                        AllowOverride All
+                        Require all granted
+                    </Directory>
+                </VirtualHost>"' >> /etc/apache2/sites-available/example.conf
+
+        sleep 2
+        sudo a2ensite example.conf
+        sudo systemctl restart apache2
+                    return
+
+
+    }
+option5()   {
+    while true; do
+        echo "Untermenü"
+        echo "Enter a PHP-Module installieren"
+        echo "Enter b PHP-Module deinstallieren"
+        echo "Enter q um zurück zu gehen"
+        read -p "Please choose an option: " sub_choice
+        case $sub_choice in
+            a) sub5_option1 ;;
+            b) sub5_option2 ;;
+            q)  
+            return ;;
+            *) echo "Invalid option. Please choose again." ;;
+        esac
+        read -n 1 -s -r -p "Press any key to continue..."
+    done
+    }
+    sub5_option1() {
+        echo "zusätzliche PHP-Module installieren"
+        # Verfügbare Module auflisten
+        apt-cache search php- | grep '^php-' | awk '{print $1}'
+        read -p "Bitte gib den Namen des Moduls ein, das du installieren möchtest: " module_name
+                apt-get install $module_name
+                
+                return
+            }
+            sub5_option2() {
+                echo "PHP-Module deinstallieren"
+                # Vorhandene Module auflisten
+                apt list --installed | grep '^php-' | awk -F'/' '{print $1}'
+                read -p "Bitte gib den Namen des Moduls ein, das du deinstallieren möchtest: " module_name
+                apt-get remove --purge $module_name
+                
+                return
+
+            }
+        option6()   {
+            while true; do
+                echo "Untermenü"
+                echo "Enter a MariaDB Anmeldung"
+                echo "Enter b installieren"
+                echo "Enter q um zurück zu gehen"
+                read -p "Please choose an option: " sub_choice
+                case $sub_choice in
+                    a) sub6_option1 ;;
+                    b) sub6_option2 ;;
+                    q)  
+                    return ;;
+                    *) echo "Invalid option. Please choose again." ;;
+                esac
+                read -n 1 -s -r -p "Press any key to continue..."
+            done
+            }
+            sub6_option1() {
+                echo "MariaDB Anmeldung"
+                sudo mysql -u root -p
+                
+                return
+            }
+
+            sub6_option2() {
+                echo "MariaDB installieren"
+                sudo apt-get install mariadb-server
+                
+                return
+            }
+
+
+
+
+        option7()   {
+            while true; do
+                echo "Untermenü"
+                echo "Enter a PHPMyAdmin installieren"
+                echo "Enter b blowfish_secret generieren"
+                echo "Enter c "mysql|information_schema|performance_schema|phpmyadmin|sys" verstecken"
+                echo "Enter q um zurück zu gehen"
+                read -p "Please choose an option: " sub_choice
+                case $sub_choice in
+                    a) sub7_option1 ;;
+                    b) sub7_option2 ;;
+                    q) return ;;
+                    
+                    *) echo "Invalid option. Please choose again." ;;
+                esac
+                read -n 1 -s -r -p "Press any key to continue..."
+            done
+            }
+            sub7_option1() {
+            curl -o phpMyAdmin.tar.gz https://files.phpmyadmin.net/phpMyAdmin/5.1.0/phpMyAdmin-5.1.0-all-languages.tar.gz
+            rm -rf /var/www/html/*
+            tar -xvzf phpMyAdmin.tar.gz -C /var/www/html/
+            mv /var/www/html/phpMyAdmin-5.1.0-all-languages /var/www/html/phpmyadmin
+            rm -rf phpMyAdmin.tar.gz
+            return 
+            }
+
+            sub7_option2() {
+            echo "blowfish_secret generieren"
+            blowfish_secret=$(openssl rand -base64 32)
+            return
+            }
+   
+    
+
+    sub7_option3() {
+    echo "mysql|information_schema|performance_schema|phpmyadmin|sys verstecken"
+    mysql -u root -p
+    GRANT SELECT, INSERT, UPDATE, DELETE ON phpmyadmin.* TO 'phpmyadmin'@'localhost';
+    FLUSH PRIVILEGES;
+            return
+    }   
+option8()   {
+    sudo apt-get install composer
+            return
+    }   
+option9()   {
+    while true; do
+        echo "Untermenü"
+        echo "Enter a Vagrant Sudoer hinzufügen"
+        echo "Enter b ändern des Eigentümers des /vagrant Verzeichnisses auf www-data"
+        echo "Vagrant:vagrant /vagrant"
+        echo "0777 /vagrant"
+        echo "Enter c 0777 /vagrant"
+        echo "Enter d Linux Header Pakete installieren"
+        echo "Enter e Mount cdrom und Virtualbox Guest Additions installieren"
+        echo "Enter f überpfrüfen des Status des systemd-modules-load.service"
+        echo "Enter q um zurück zu gehen"
+        read -p "Please choose an option: " sub_choice
+        case $sub_choice in
+            a) sub9_option1 ;;
+            b) sub9_option2 ;;
+            c) sub9_option3 ;;
+            d) sub9_option4 ;;
+            e) sub9_option5 ;;
+            f) sub9_option6 ;;
+            q)  
+            return ;;
+            *) echo "Invalid option. Please choose again." ;;
+        esac
+        read -n 1 -s -r -p "Press any key to continue..."
+    done
+    }
+    sub9_option1() {
+        echo "Vagrant Sudoer hinzufügen"
+        echo "vagrant ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+                return
+        }
+
+    sub9_option2() {
+        echo "Ändern des Eigentümers des /vagrant Verzeichnisses auf www-data"
+        chown -R www-data:www-data /vagrant
+        echo "Vagrant:vagrant /vagrant"
+        chown -R vagrant:vagrant /vagrant
+                return
+        }
+
+    sub9_option3() {
+        echo "0777 /vagrant"
+        chmod -R 0777 /vagrant
+                return
+        }
+
+    sub9_option4() {
+        echo "Linux Header Pakete installieren"
+        sudo apt-get install linux-headers-$(uname -r)
+                return
+        }
+
+    sub9_option5() {
+        echo "Mount cdrom und Virtualbox Guest Additions installieren"
+        sudo mount /dev/cdrom /mnt
+        sudo /mnt/VBoxLinuxAdditions.run
+                return
+        }   
+
+    sub9_option6() {
+    echo "Überpfrüfen des Status des systemd-modules-load.service"
+    sudo systemctl status systemd-modules-load.service
+            return
+    }
+
+
+ 
