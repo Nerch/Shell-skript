@@ -17,6 +17,7 @@ show_menu() {
 
 main()      {
     while true; do
+        clear
         show_menu
         read -p "Bitte wähle eine Option: " choice
         case $choice in
@@ -39,15 +40,12 @@ main()      {
 option1()   {
     echo "APK update & upgrade "
     apt install update&upgrade
-    
-    clear
     return
     }
 
 option2()   {
     echo "Net-Tools installieren"
-    sudo net-tools
-    clear
+    sudo net-tool
     return
     }
 
